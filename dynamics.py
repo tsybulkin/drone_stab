@@ -20,8 +20,14 @@ def control(z,dz,z_end):
 	return lim(U_MAX, m*G + 5*(z_end - z) - 3.7*dz)
 
 
-def P_control(z,dz,z_end):
-	return lim(U_MAX, k*(z_end - z) )
+
+def PID_control(de,e,ie,z,z_end,tau):
+	Kd = 1.
+	Kp = 1.
+	Ki = 1.
+	de, e, ie = (z - z_end - e)/tau, z - z_end, ie + (z - z_end)*TAU
+	U = Kd*de + Kp*e + Ki*ie
+	return U,de,e,ie
 
 
 def run(T=1):
@@ -39,7 +45,25 @@ def run(T=1):
 	[Ti, Z, dZ, U] = zip(*log)
 	plt.plot(Ti, Z, '-')
 	plt.show()
-	
+
+
+def run_pid(T=1):
+	t = 0
+	z = 0.
+	dz = 0.
+	de,e,ie = 0., 0., 0.
+	log = []
+
+	while t < T:
+		u,de,e,ie = control(de,e,ie,z,Z_END)
+		z,dz = dynamics(z,dz,u,TAU) 
+		log.append((t,z,dz,u))
+		t += TAU
+
+	[Ti, Z, dZ, U] = zip(*log)
+	plt.plot(Ti, Z, '-')
+	plt.show()
+
 
 
 def lim(LIM, val):
