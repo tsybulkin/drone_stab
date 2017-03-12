@@ -22,10 +22,10 @@ def control(z,dz,z_end):
 
 
 def PID_control(de,e,ie,z,z_end,tau):
-	Kd = 1.
-	Kp = 1.
-	Ki = 1.
-	de, e, ie = (z - z_end - e)/tau, z - z_end, ie + (z - z_end)*TAU
+	Kd = 2.
+	Kp = 7.
+	Ki = 5.
+	de, e, ie = (z_end - z - e)/tau, z_end - z, ie + (z_end - z)*TAU
 	U = Kd*de + Kp*e + Ki*ie
 	return U,de,e,ie
 
@@ -55,7 +55,8 @@ def run_pid(T=1):
 	log = []
 
 	while t < T:
-		u,de,e,ie = control(de,e,ie,z,Z_END)
+		u,de,e,ie = PID_control(de,e,ie,z,Z_END,TAU)
+		print de,e,ie
 		z,dz = dynamics(z,dz,u,TAU) 
 		log.append((t,z,dz,u))
 		t += TAU
@@ -83,7 +84,7 @@ def dynamics(z,dz,u,tau):
 if __name__ == '__main__':
 	args = sys.argv[:]
 	if len(args) == 2:
-		run(float(args[1]))
+		run_pid(float(args[1]))
 	else:
-		run()
+		run_pid()
 
