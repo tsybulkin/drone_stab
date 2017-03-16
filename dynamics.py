@@ -1,5 +1,5 @@
 #
-# drone stabilization
+# pendulum
 #
 
 from matplotlib import pyplot as plt
@@ -7,17 +7,17 @@ import sys
 
 
 TAU = 0.02
-Z_END = 2.
 U_MAX = 12.
 G = 9.81
 C = 0.1
-k = 5.
 m = 1.
+L = 1.
+Z_END = 2.
 
 
 def control(z,dz,z_end):
-	#return lim(U_MAX, m*G + 5*(z_end - z))
-	return lim(U_MAX, m*G + 5*(z_end - z) - 3.7*dz)
+	#return lim(U_MAX, m*G + 5*(z_end - z))  # proportional (1)
+	return lim(U_MAX, m*G + 5*(z_end - z) - 3.7*dz)  # prop + dir (2)
 
 
 
@@ -56,7 +56,7 @@ def run_pid(T=1):
 
 	while t < T:
 		u,de,e,ie = PID_control(de,e,ie,z,Z_END,TAU)
-		print de,e,ie
+		#print de,e,ie
 		z,dz = dynamics(z,dz,u,TAU) 
 		log.append((t,z,dz,u))
 		t += TAU
@@ -64,7 +64,6 @@ def run_pid(T=1):
 	[Ti, Z, dZ, U] = zip(*log)
 	plt.plot(Ti, Z, '-')
 	plt.show()
-
 
 
 def lim(LIM, val):
@@ -84,7 +83,7 @@ def dynamics(z,dz,u,tau):
 if __name__ == '__main__':
 	args = sys.argv[:]
 	if len(args) == 2:
-		run_pid(float(args[1]))
+		run(float(args[1]))
 	else:
-		run_pid()
+		run()
 
